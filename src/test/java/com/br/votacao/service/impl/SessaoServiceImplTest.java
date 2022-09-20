@@ -19,20 +19,15 @@ class SessaoServiceImplTest {
     public static final String SESSAO_NAO_EXISTE = "Sessão não existe";
     @InjectMocks
     private SessaoServiceImpl service;
-
     @Mock
     private SessaoRepository repository;
-
     private Sessao sessao;
-
     private Pauta pauta;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         criarSessao();
     }
-
     @Test
     void salvar() {
         Mockito.when(repository.save(Mockito.any())).thenReturn(sessao);
@@ -42,7 +37,6 @@ class SessaoServiceImplTest {
         Assertions.assertNotNull(sessaoSalvarTeste);
         Assertions.assertEquals(Sessao.class, sessaoSalvarTeste.getClass());
     }
-
     @Test
     void findById() {
         Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.of(sessao));
@@ -52,7 +46,6 @@ class SessaoServiceImplTest {
         Assertions.assertNotNull(sessaoTeste);
         Assertions.assertEquals(Sessao.class, sessaoTeste.get().getClass());
     }
-
     @Test
     void findByIdSessaoNaoExiste() {
         Mockito.when(repository.findById(Mockito.any()))
@@ -63,7 +56,6 @@ class SessaoServiceImplTest {
             Assertions.assertEquals(SESSAO_NAO_EXISTE, ex.getMessage());
         }
     }
-
     @Test
     void deletarSessao() {
         Mockito.doNothing().when(repository).delete(Mockito.any());
@@ -73,7 +65,6 @@ class SessaoServiceImplTest {
         Mockito.verify(repository, Mockito.times(1)).delete(Mockito.any());
 
     }
-
     @Test
     void findAll() {
         Mockito.when(repository.findAll()).thenReturn(List.of(sessao));
@@ -82,7 +73,6 @@ class SessaoServiceImplTest {
 
         Assertions.assertEquals(Sessao.class, listSessaoTest.get(0).getClass());
     }
-
     private void criarSessao() {
 
         pauta = new Pauta("1", "pauta 1", 0, 0);
