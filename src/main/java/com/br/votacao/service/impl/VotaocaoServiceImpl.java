@@ -24,7 +24,6 @@ public class VotaocaoServiceImpl implements VotaocaoService {
     private static final Logger log = LoggerFactory.getLogger(VotaocaoServiceImpl.class);
     public static final String UNABLE_TO_VOTE = "UNABLE_TO_VOTE";
     public static final String CPF_INVALIDO = "CPF invalido";
-    public static final String NAO_EXISTE_ESSE_ASSOCIADO_CADASTRADO = "Nao existe esse associado cadastrado";
 
     private final AssociadoService associadoService;
 
@@ -42,9 +41,7 @@ public class VotaocaoServiceImpl implements VotaocaoService {
 
     private Optional<Sessao> sessao;
 
-    //public Votacao salvar(Votacao votacao) throws Exception
-
-   @Override
+    @Override
     public Optional<Votacao> buscarPorAssociado(Associado associado) {
         log.info("Buscando pelo CPF: {}", associado);
         Votacao associadoVoto = this.repository.findByAssociado(associado);
@@ -93,19 +90,15 @@ public class VotaocaoServiceImpl implements VotaocaoService {
     }
 
     public void validarCpf(String cpf) {
-
         associado = associadoService.findByCpf(cpf);
-        if(associado.isPresent()) {
-            votacao.setAssociado(associado.get());
-        } else {
-            throw new BusinessException(NAO_EXISTE_ESSE_ASSOCIADO_CADASTRADO);
-        }
     }
 
     public boolean validarVoto(String voto) {
         boolean validar = false;
         if("sim".equals(voto.toLowerCase()) ||"nao".equals(voto.toLowerCase()) ) {
             validar = true;
+        } else{
+            //msg.put("ATENCAO", "Erro no dados do voto!");
         }
         return validar;
     }

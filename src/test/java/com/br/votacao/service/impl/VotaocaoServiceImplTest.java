@@ -6,7 +6,6 @@ import com.br.votacao.domain.Sessao;
 import com.br.votacao.domain.Votacao;
 import com.br.votacao.repository.SessaoRepository;
 import com.br.votacao.repository.VotacaoRepository;
-import com.br.votacao.service.execptions.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class VotaocaoServiceImplTest {
 
-    public static final String ASSOCIADO_JA_VOLTOU = "Associado já voltou";
     public static final String SESSAO_ID = "1";
     public static final String CPF = "99999999999";
     public static final String VOTO = "sim";
@@ -32,10 +30,13 @@ class VotaocaoServiceImplTest {
     private SessaoServiceImpl sessaoService;
 
     @Mock
-    private VotacaoRepository repository;
+    private AssociadoServiceImpl  associadoService;
 
     @Mock
-    private SessaoRepository sessaoRepository;
+    private PautaServiceImpl pautaService;
+
+    @Mock
+    private VotacaoRepository repository;
 
     private Votacao votacao;
 
@@ -44,6 +45,11 @@ class VotaocaoServiceImplTest {
     private Associado associado;
     private Pauta pauta;
 
+    private Optional<Sessao> sessaoOptional;
+
+    private  Optional<Associado> associadoOptional;
+
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -51,8 +57,10 @@ class VotaocaoServiceImplTest {
     }
 
     @Test
-    void salvarSucesso() throws Exception {
-        Mockito.when(sessaoRepository.findById(Mockito.any())).thenReturn(((Optional.of(sessao))));
+    void salvarVotacao() throws Exception {
+        Mockito.when(sessaoService.findById(Mockito.any())).thenReturn(((sessaoOptional)));
+        Mockito.when(associadoService.findById(Mockito.any())).thenReturn(((associadoOptional)));
+        Mockito.when(pautaService.salvar(Mockito.any())).thenReturn(((pauta)));
         Mockito.when(repository.save(Mockito.any())).thenReturn(((votacao)));
 
         Votacao votacaoTeste = service.salvar(SESSAO_ID, CPF, VOTO);
@@ -60,18 +68,6 @@ class VotaocaoServiceImplTest {
         assertNotNull(votacaoTeste);
         assertEquals(Votacao.class, votacaoTeste.getClass());
 
-    }
-
-    @Test
-    void salvarError() throws Exception {
-        Mockito.when(repository.findByAssociado(Mockito.any()))
-                .thenThrow(new BusinessException(ASSOCIADO_JA_VOLTOU));
-
-        try {
-            service.salvar(SESSAO_ID, CPF, VOTO);
-        } catch (Exception ex) {
-            assertEquals(ASSOCIADO_JA_VOLTOU, ex.getMessage());
-        }
     }
 
     @Test
@@ -85,6 +81,7 @@ class VotaocaoServiceImplTest {
     }
 
     public void inicarDados() {
+
         pauta = Pauta.builder()
                 .id("1")
                 .nome("teste-pauta")
@@ -95,10 +92,14 @@ class VotaocaoServiceImplTest {
                 .pauta(pauta)
                 .build();
 
+        sessaoOptional = Optional.of(sessao);
+
         associado = Associado.builder()
                 .id("1")
                 .cpf("99999999999")
                 .build();
+
+        associadoOptional = Optional.of(associado);
 
         votacao = Votacao.builder()
                 .id("1")
