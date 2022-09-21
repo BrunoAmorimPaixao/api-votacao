@@ -24,6 +24,7 @@ public class VotaocaoServiceImpl implements VotaocaoService {
     private static final Logger log = LoggerFactory.getLogger(VotaocaoServiceImpl.class);
     public static final String UNABLE_TO_VOTE = "UNABLE_TO_VOTE";
     public static final String CPF_INVALIDO = "CPF invalido";
+    public static final String ASSOCIADO_JA_VOLTOU = "Associado já voltou";
 
     private final AssociadoService associadoService;
 
@@ -44,11 +45,11 @@ public class VotaocaoServiceImpl implements VotaocaoService {
     @Override
     public Optional<Votacao> buscarPorAssociado(Associado associado) {
         log.info("Buscando pelo CPF: {}", associado);
-        Votacao associadoSelecionado = this.repository.findByAssociado(associado);
-        if(associadoSelecionado != null && associadoSelecionado.isVoto()) {
-            throw new BusinessException("Associado já voltou");
+        Votacao votacaoAssociadoSelecionado = this.repository.findByAssociado(associado);
+        if(votacaoAssociadoSelecionado != null && votacaoAssociadoSelecionado.isVoto()) {
+            throw new BusinessException(ASSOCIADO_JA_VOLTOU);
         }
-        return Optional.ofNullable(associadoSelecionado);
+        return Optional.ofNullable(votacaoAssociadoSelecionado);
 
     }
 
