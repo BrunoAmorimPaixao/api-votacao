@@ -6,6 +6,8 @@ import com.br.votacao.domain.Sessao;
 import com.br.votacao.domain.Votacao;
 import com.br.votacao.repository.SessaoRepository;
 import com.br.votacao.repository.VotacaoRepository;
+import com.br.votacao.service.execptions.BusinessException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +25,7 @@ class VotaocaoServiceImplTest {
     public static final String SESSAO_ID = "1";
     public static final String CPF = "99999999999";
     public static final String VOTO = "sim";
+    public static final String ASSOCIADO_JA_VOLTOU = "Associado já voltou";
     @InjectMocks
     private VotaocaoServiceImpl service;
 
@@ -68,6 +71,20 @@ class VotaocaoServiceImplTest {
         assertNotNull(votacaoTeste);
         assertEquals(Votacao.class, votacaoTeste.getClass());
 
+    }
+
+    @Test
+    void salvarVotacaoAssociadoJaVotou() throws Exception {
+        Mockito.when(sessaoService.findById(Mockito.any())).thenReturn(((sessaoOptional)));
+        Mockito.when(associadoService.findById(Mockito.any())).thenReturn(((associadoOptional)));
+        Mockito.when(pautaService.salvar(Mockito.any())).thenReturn(((pauta)));
+        Mockito.when(repository.findByAssociado(Mockito.any())).thenThrow(new BusinessException(ASSOCIADO_JA_VOLTOU));
+
+        try{
+            service.salvar(SESSAO_ID, CPF, VOTO);
+        }catch (Exception ex){
+            Assertions.assertEquals(ASSOCIADO_JA_VOLTOU, ex.getMessage());
+        }
     }
 
     @Test

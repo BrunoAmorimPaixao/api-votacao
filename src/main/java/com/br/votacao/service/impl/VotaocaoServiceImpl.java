@@ -44,11 +44,12 @@ public class VotaocaoServiceImpl implements VotaocaoService {
     @Override
     public Optional<Votacao> buscarPorAssociado(Associado associado) {
         log.info("Buscando pelo CPF: {}", associado);
-        Votacao associadoVoto = this.repository.findByAssociado(associado);
-        if(associadoVoto != null && associadoVoto.isVoto()) {
+        Votacao associadoSelecionado = this.repository.findByAssociado(associado);
+        if(associadoSelecionado != null && associadoSelecionado.isVoto()) {
             throw new BusinessException("Associado já voltou");
         }
-        return Optional.ofNullable(associadoVoto);
+        return Optional.ofNullable(associadoSelecionado);
+
     }
 
     public Votacao salvar(String sessaoId, String cpf, String voto) throws Exception {
@@ -63,6 +64,7 @@ public class VotaocaoServiceImpl implements VotaocaoService {
         votacao.setSessao(sessao.get());
         boolean isVoto = voto.equals("sim") ? true : false;
         votacao.setVoto(isVoto);
+        //TODO: o servico nao esta funcionando
         //validarCpfClient(cpf);
         validarCpf(cpf);
         buscarPorAssociado(votacao.getAssociado());
@@ -92,16 +94,4 @@ public class VotaocaoServiceImpl implements VotaocaoService {
     public void validarCpf(String cpf) {
         associado = associadoService.findByCpf(cpf);
     }
-
-    public boolean validarVoto(String voto) {
-        boolean validar = false;
-        if("sim".equals(voto.toLowerCase()) ||"nao".equals(voto.toLowerCase()) ) {
-            validar = true;
-        } else{
-            //msg.put("ATENCAO", "Erro no dados do voto!");
-        }
-        return validar;
-    }
-
-
 }
